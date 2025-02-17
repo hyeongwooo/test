@@ -76,6 +76,14 @@ spec:
       name: default
       namespace: argo-events
 
+    - apiVersion: v1
+      kind: Endpoints
+      namespace: argo-events
+    - apiVersion: v1
+      kind: ConfigMap
+      name: argo-events-controller-config
+      namespace: argo-events
+
   placement:
     clusterAffinity:
       clusterNames:
