@@ -1,60 +1,108 @@
 apiVersion: policy.karmada.io/v1alpha1
 kind: PropagationPolicy
 metadata:
-  name: argocd-resources-policy
-  namespace: argocd
+ name: argocd-resources-policy
+ namespace: argocd
 spec:
-  resourceSelectors:
-    # Namespace
-    - apiVersion: v1
-      kind: Namespace
-      name: argocd
-    # Core Resources
-    - apiVersion: v1
-      kind: ServiceAccount
-      namespace: argocd
-    - apiVersion: v1
-      kind: Secret
-      namespace: argocd
-    - apiVersion: v1
-      kind: ConfigMap
-      namespace: argocd
-    - apiVersion: v1
-      kind: Service
-      namespace: argocd
-    # RBAC Resources
-    - apiVersion: rbac.authorization.k8s.io/v1
-      kind: Role
-      namespace: argocd
-    - apiVersion: rbac.authorization.k8s.io/v1
-      kind: RoleBinding
-      namespace: argocd
-    - apiVersion: rbac.authorization.k8s.io/v1
-      kind: ClusterRole
-    - apiVersion: rbac.authorization.k8s.io/v1
-      kind: ClusterRoleBinding
-    # Deployments
-    - apiVersion: apps/v1
-      kind: Deployment
-      namespace: argocd
-    - apiVersion: apps/v1
-      kind: StatefulSet
-      namespace: argocd
-    # Networking
-    - apiVersion: networking.k8s.io/v1
-      kind: NetworkPolicy
-      namespace: argocd
-    # Custom Resources
-    - apiVersion: argoproj.io/v1alpha1
-      kind: Application
-      namespace: argocd
-    - apiVersion: argoproj.io/v1alpha1
-      kind: AppProject
-      namespace: argocd
-    - apiVersion: argoproj.io/v1alpha1
-      kind: ApplicationSet
-      namespace: argocd
-  placement:
-    clusterAffinity:
-      clusterNames:
-        - member1
+ resourceSelectors:
+   # Namespace
+   - apiVersion: v1
+     kind: Namespace
+     name: argocd
+   # ServiceAccounts
+   - apiVersion: v1
+     kind: ServiceAccount
+     name: argocd-application-controller
+     namespace: argocd
+   - apiVersion: v1
+     kind: ServiceAccount
+     name: argocd-server
+     namespace: argocd
+   - apiVersion: v1
+     kind: ServiceAccount
+     name: argocd-repo-server
+     namespace: argocd
+   - apiVersion: v1
+     kind: ServiceAccount
+     name: argocd-dex-server
+     namespace: argocd
+   # Secrets
+   - apiVersion: v1
+     kind: Secret
+     name: argocd-secret
+     namespace: argocd
+   # ConfigMaps  
+   - apiVersion: v1
+     kind: ConfigMap
+     name: argocd-cm
+     namespace: argocd
+   - apiVersion: v1
+     kind: ConfigMap  
+     name: argocd-cmd-params-cm
+     namespace: argocd
+   - apiVersion: v1
+     kind: ConfigMap
+     name: argocd-rbac-cm
+     namespace: argocd
+   # Services
+   - apiVersion: v1
+     kind: Service
+     name: argocd-server
+     namespace: argocd
+   - apiVersion: v1
+     kind: Service
+     name: argocd-repo-server
+     namespace: argocd
+   - apiVersion: v1
+     kind: Service
+     name: argocd-dex-server
+     namespace: argocd
+   # RBAC Resources
+   - apiVersion: rbac.authorization.k8s.io/v1
+     kind: Role
+     namespace: argocd
+   - apiVersion: rbac.authorization.k8s.io/v1
+     kind: RoleBinding
+     namespace: argocd
+   - apiVersion: rbac.authorization.k8s.io/v1
+     kind: ClusterRole
+     name: argocd-application-controller
+   - apiVersion: rbac.authorization.k8s.io/v1
+     kind: ClusterRole
+     name: argocd-server
+   - apiVersion: rbac.authorization.k8s.io/v1
+     kind: ClusterRoleBinding
+     name: argocd-application-controller
+   - apiVersion: rbac.authorization.k8s.io/v1
+     kind: ClusterRoleBinding
+     name: argocd-server
+   # Deployments
+   - apiVersion: apps/v1
+     kind: Deployment
+     name: argocd-server
+     namespace: argocd
+   - apiVersion: apps/v1
+     kind: Deployment
+     name: argocd-repo-server
+     namespace: argocd
+   - apiVersion: apps/v1
+     kind: Deployment
+     name: argocd-application-controller
+     namespace: argocd
+   - apiVersion: apps/v1
+     kind: Deployment
+     name: argocd-dex-server
+     namespace: argocd
+   # Network Policies
+   - apiVersion: networking.k8s.io/v1
+     kind: NetworkPolicy
+     namespace: argocd
+ placement:
+   clusterAffinity:
+     clusterNames:
+       - member1
+   spreadConstraints:
+     - maxGroups: 1
+       minGroups: 1
+       spreadByField: cluster
+ propagationMode: BidirectionalSync
