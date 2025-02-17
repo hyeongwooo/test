@@ -1,0 +1,87 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: argoevents-resources-policy
+  namespace: argo-events
+spec:
+  resourceSelectors:
+    # ServiceAccounts
+    - apiVersion: v1
+      kind: ServiceAccount
+      name: argo-events-sa
+      namespace: argo-events
+    - apiVersion: v1
+      kind: ServiceAccount
+      name: argo-events-webhook-sa
+      namespace: argo-events
+
+    # ConfigMaps
+    - apiVersion: v1
+      kind: ConfigMap
+      name: argo-events-controller-config
+      namespace: argo-events
+
+    # Services
+    - apiVersion: v1
+      kind: Service
+      name: events-webhook
+      namespace: argo-events
+
+    # RBAC Resources
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      name: argo-events-role
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      name: argo-events-webhook
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      name: argo-events-aggregate-to-admin
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      name: argo-events-aggregate-to-edit
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      name: argo-events-aggregate-to-view
+
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      name: argo-events-binding
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      name: argo-events-webhook-binding
+
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      name: argo-events-role
+      namespace: argo-events
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      name: argo-events-role-binding
+      namespace: argo-events
+
+    # Deployments
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: controller-manager
+      namespace: argo-events
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: events-webhook
+      namespace: argo-events
+
+    # EventBus
+    - apiVersion: argoproj.io/v1alpha1
+      kind: EventBus
+      name: default
+      namespace: argo-events
+
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - member1
+    spreadConstraints:
+      - maxGroups: 1
+        minGroups: 1
+        spreadByField: cluster
+  propagationMode: BidirectionalSync
