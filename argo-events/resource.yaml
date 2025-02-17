@@ -644,6 +644,9 @@ subjects:
 - kind: ServiceAccount
   name: argo-events-webhook-sa
   namespace: argo-events
+- kind: Group 
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1
 kind: Service
