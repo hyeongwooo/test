@@ -596,14 +596,10 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - secrets
+  - configmaps
   verbs:
   - get
   - list
-  - create
-  - update
-  - delete
-  - patch
   - watch
 - apiGroups:
   - ""
@@ -613,18 +609,9 @@ rules:
   - get
   - list
   - watch
-  namespace: '*'   # 모든 네임스페이스에 대한 접근 허용
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  resourceNames:
-  - extension-apiserver-authentication
-  verbs:
-  - get
-  - list
-  - watch
-  namespace: kube-system
+  namespaceSelector:  # kube-system 네임스페이스의 configmap 접근 허용
+    matchLabels:
+      kubernetes.io/metadata.name: kube-system
 - apiGroups:
   - apps
   resources:
@@ -637,30 +624,13 @@ rules:
   resources:
   - validatingwebhookconfigurations
   verbs:
-  - get
-  - list
   - create
-  - update
   - delete
+  - get
+  - list
   - patch
+  - update
   - watch
-- apiGroups:
-  - argoproj.io
-  resources:
-  - eventbus
-  - eventsources
-  - sensors
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
-  - clusterroles
-  verbs:
-  - get
-  - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
