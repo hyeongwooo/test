@@ -1,0 +1,24 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: ClusterPropagationPolicy
+metadata:
+  name: argocd-crds-policy
+spec:
+  resourceSelectors:
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: applications.argoproj.io
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: applicationsets.argoproj.io
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: appprojects.argoproj.io
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - member1
+    spreadConstraints:
+      - maxGroups: 1
+        minGroups: 1
+        spreadByField: cluster
+  propagationMode: BidirectionalSync
